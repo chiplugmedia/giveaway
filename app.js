@@ -7,19 +7,21 @@ canvas.width = 400;
 canvas.height = 400;
 
 const prizes = [
-    { value: '1 Million Naira', color: '#E6E6FA' },
-    { value: '10 Million Naira', color: '#E6E6FA' },
-    { value: 'iPhone 16 pro', color: '#E6E6FA' },
-    { value: '2,000 Naira', color: '#E6E6FA' },
-    { value: '1 Free Spin', color: '#E6E6FA' },
-    { value: '500,000 Naira', color: '#E6E6FA' },
-    { value: '5,000 Task Points', color: '#E6E6FA' },
-    { value: '5,000 Naira', color: '#E6E6FA' }
+    { value: '1 Million Naira', color: '#E6E6FA', icon: '💰' },
+    { value: '10 Million Naira', color: '#E6E6FA', icon: '💎' },
+    { value: 'iPhone 16 pro', color: '#E6E6FA', icon: '📱' },
+    { value: '2,000 Naira', color: '#E6E6FA', icon: '💵' },
+    { value: '1 Free Spin', color: '#E6E6FA', icon: '🎡' },
+    { value: '500,000 Naira', color: '#E6E6FA', icon: '💸' },
+    { value: '5,000 Task Points', color: '#E6E6FA', icon: '⭐' },
+    { value: '5,000 Naira', color: '#E6E6FA', icon: '💶' }
 ];
+
 
 let isSpinning = false;
 let currentRotation = 0;
 
+// Update the text drawing part in drawWheel function
 function drawWheel() {
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -29,6 +31,7 @@ function drawWheel() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw segments
+    // Update the text drawing section
     prizes.forEach((prize, i) => {
         ctx.beginPath();
         ctx.fillStyle = i % 2 === 0 ? '#E6E6FA' : '#F0F0FF';
@@ -40,7 +43,7 @@ function drawWheel() {
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Draw text
+        // Draw text and icon
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(i * sliceAngle + sliceAngle / 2 + currentRotation);
@@ -51,10 +54,10 @@ function drawWheel() {
         // Handle text wrapping for long prizes
         const words = prize.value.split(' ');
         if (words.length > 2) {
-            ctx.fillText(words.slice(0, 2).join(' '), radius - 25, -5);
+            ctx.fillText(`${prize.icon} ${words.slice(0, 2).join(' ')}`, radius - 25, -5);
             ctx.fillText(words.slice(2).join(' '), radius - 25, 10);
         } else {
-            ctx.fillText(prize.value, radius - 25, 5);
+            ctx.fillText(`${prize.icon} ${prize.value}`, radius - 25, 5);
         }
         ctx.restore();
     });
@@ -120,14 +123,28 @@ function easeOut(t) {
 }
 
 // Update the showResult function
+// Update showResult to include icon
 function showResult(prize) {
     winSound.currentTime = 0;
     winSound.play();
 
+    const winningPrize = prizes.find(p => p.value === prize);
+    
     Swal.fire({
         title: 'Congratulations! 🎉',
-        html: `You won <strong>${prize}</strong>!`,
+        html: `You won <strong>${winningPrize.icon} ${prize}</strong>!`,
         icon: 'success',
+        confirmButtonText: 'Submit',
+        confirmButtonColor: '#8A2BE2',
+        background: '#1a1a1a',
+        color: '#fff',
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+        },
+        
         confirmButtonText: 'Claim Now',
         confirmButtonColor: '#8A2BE2',
         background: '#1a1a1a',
@@ -179,7 +196,7 @@ function showResult(prize) {
 
     const result = document.querySelector('.winner-alert');
     result.style.display = 'block';
-    result.textContent = `🔊 YOU won ${prize}`;
+    result.textContent = `🔊 YOU won ${winningPrize.icon} ${prize}`;
 }
 
 spinButton.addEventListener('click', spin);
